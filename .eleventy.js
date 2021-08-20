@@ -6,6 +6,8 @@ const pluginNavigation = require("@11ty/eleventy-navigation");
 const markdownIt = require("markdown-it");
 const markdownItAnchor = require("markdown-it-anchor");
 
+const INPUT_FOLDER = '_src'
+
 module.exports = function(eleventyConfig) {
   // Add plugins
   eleventyConfig.addPlugin(pluginRss);
@@ -61,8 +63,8 @@ module.exports = function(eleventyConfig) {
   });
 
   // Copy the `img` and `css` folders to the output
-  eleventyConfig.addPassthroughCopy("img");
-  eleventyConfig.addPassthroughCopy("css");
+  eleventyConfig.addPassthroughCopy(INPUT_FOLDER + "/img");
+  eleventyConfig.addPassthroughCopy(INPUT_FOLDER + "/css");
 
   // Customize Markdown library and settings:
   let markdownLibrary = markdownIt({
@@ -133,7 +135,7 @@ module.exports = function(eleventyConfig) {
 
     // These are all optional (defaults are shown):
     dir: {
-      input: ".",
+      input: INPUT_FOLDER,
       includes: "_includes",
       data: "_data",
       output: "_site"

@@ -16,7 +16,18 @@ async function getAllBlogposts() {
   while (makeNewQuery) {
     try {
       // initiate fetch
-      const data = await fetch("http://localhost:1337/graphql", {
+
+      let CMS_URL;
+
+      if(process.env.NODE_ENV === 'develop') {
+        CMS_URL = "http://localhost:1337/graphql"
+
+      } else {
+        CMS_URL = "http://vcgames-cmd.herokuapp.com/graphql"
+
+      }
+
+      const data = await fetch(CMS_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -24,13 +35,17 @@ async function getAllBlogposts() {
         },
         body: JSON.stringify({
           query: `{
-              articles {
+              posts {
               id
-              title
+              Title
               content
-              published_at
-              author
-              slug
+              date
+              author {
+                username
+              }
+              cover {
+                url
+              }
             }
           }`,
         }),
@@ -49,13 +64,13 @@ async function getAllBlogposts() {
       }
 
       // update blogpost array with the data from the JSON response
-      blogposts = blogposts.concat(response.data.articles);
+      blogposts = blogposts.concat(response.data.posts);
 
       // prepare for next query
       recordsToSkip += recordsPerQuery;
 
       // stop querying if we are getting back less than the records we fetch per query
-      if (response.data.articles.length < recordsPerQuery) {
+      if (response.data.posts.length < recordsPerQuery) {
         makeNewQuery = false;
       }
     } catch (error) {
@@ -65,13 +80,16 @@ async function getAllBlogposts() {
 
   // format blogposts objects
   const blogpostsFormatted = blogposts.map((item) => {
+
     return {
       id: item.id,
-      title: item.title,
-      slug: item.slug,
+      title: item.Title,
+      slug: item.Title.replace(' ', '-'),
       body: item.content,
-      author: item.author,
-      date: item.published_at       
+      author: item.author.username,
+      date: item.date,
+
+      cover: item.cover[0].url
     };
   });
 
@@ -80,4 +98,4 @@ async function getAllBlogposts() {
 }
 
 // export for 11ty
-//module.exports = getAllBlogposts;
+module.exports = getAllBlogposts;

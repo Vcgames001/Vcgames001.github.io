@@ -12,7 +12,9 @@ permalink: blog/{{ blogpost.slug }}/index.html
 
 {% block content %}
   {# blogpost #}
-
+  <picture>
+    <img src="{{ blogpost.cover }}">
+  </picture>
   <h1>{{ blogpost.title }}</h1>
 {{ blogpost.body | safe }}
 
